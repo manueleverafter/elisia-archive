@@ -8,6 +8,17 @@ export const platformLabel: Record<Platform, string> = {
   instagram: "Instagram",
 };
 
+/** Display name and tint hue for each social platform. */
+export const platformInfo: Record<string, { name: string; hue: number }> = {
+  instagram: { name: "Instagram", hue: 350 },
+  tiktok: { name: "TikTok", hue: 195 },
+  x: { name: "X", hue: 260 },
+  facebook: { name: "Facebook", hue: 255 },
+  youtube: { name: "YouTube", hue: 25 },
+  spotify: { name: "Spotify", hue: 150 },
+  weverse: { name: "Weverse", hue: 175 },
+};
+
 /** Theme-tinted placeholder used until a real image exists. */
 export function Placeholder({ label, className = "" }: { label?: string; className?: string }) {
   return (

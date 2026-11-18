@@ -85,3 +85,15 @@ export type FanAd = {
   url: string;
   note?: string;
 };
+
+export type FeedPost = {
+  id: string;
+  platform: "instagram" | "tiktok" | "x" | "facebook";
+  url: string;
+  caption: string;
+  date: string;
+  tiktokId?: string;
+  thumbUrl?: string;
+  width?: number;
+  height?: number;
+};

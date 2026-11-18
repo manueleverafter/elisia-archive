@@ -34,7 +34,7 @@ export type ResourceDef = {
   defaultSort: Record<string, 1 | -1>;
 };
 
-export type ResourceKey = "media" | "polaroids" | "releases" | "posts" | "ads" | "press" | "socials";
+export type ResourceKey = "media" | "polaroids" | "releases" | "posts" | "ads" | "press" | "socials" | "feed";
 
 const opts = (...pairs: [string, string][]) => pairs.map(([value, label]) => ({ value, label }));
 
@@ -202,6 +202,37 @@ export const resources: Record<ResourceKey, ResourceDef> = {
       },
     ],
   },
+  feed: {
+    key: "feed",
+    label: "Social feed",
+    singular: "post",
+    titleField: "caption",
+    dateField: "date",
+    defaultSort: { date: -1 },
+    fields: [
+      {
+        name: "url",
+        label: "Post link",
+        type: "url",
+        required: true,
+        help: "An Instagram, TikTok, X or Facebook post. The platform is detected automatically.",
+        placeholder: "https://www.instagram.com/p/…",
+      },
+      { name: "caption", label: "Caption", type: "textarea", help: "Copy the post's caption, or write a short summary." },
+      {
+        name: "thumb",
+        label: "Picture",
+        type: "image",
+        help: "Save the post's picture and upload it here. TikTok posts without a picture show a play button instead.",
+      },
+      {
+        name: "date",
+        label: "Date",
+        type: "date",
+        help: "Leave empty for Instagram and TikTok: the date is read from the link.",
+      },
+    ],
+  },
   socials: {
     key: "socials",
     label: "Socials",
@@ -246,6 +277,44 @@ export const resources: Record<ResourceKey, ResourceDef> = {
 };
 
 export const resourceList = Object.values(resources);
+
+const IG_ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
+
+/**
+ * Detects the platform of a social post link and, for Instagram and TikTok,
+ * the posting date, which both encode in the post id.
+ */
+export function parseSocialPost(url: string): {
+  platform: "instagram" | "tiktok" | "x" | "facebook" | null;
+  date?: string;
+  tiktokId?: string;
+} {
+  let u: URL;
+  try {
+    u = new URL(url);
+  } catch {
+    return { platform: null };
+  }
+  const host = u.hostname.replace(/^www\.|^m\./, "");
+  const day = (ms: number) => (Number.isFinite(ms) && ms > 1e12 ? new Date(ms).toISOString().slice(0, 10) : undefined);
+  if (host.endsWith("instagram.com")) {
+    const code = u.pathname.match(/\/(?:p|reel|tv)\/([\w-]{11})/)?.[1];
+    if (!code) return { platform: "instagram" };
+    let id = BigInt(0);
+    for (const c of code) id = id * BigInt(64) + BigInt(IG_ALPHABET.indexOf(c));
+    return { platform: "instagram", date: day(Number((id >> BigInt(23)) + BigInt(1314220021721))) };
+  }
+  if (host.endsWith("tiktok.com")) {
+    const id = u.pathname.match(/\/(?:video|photo)\/(\d{15,})/)?.[1];
+    return { platform: "tiktok", tiktokId: id, date: id ? day(Number(BigInt(id) >> BigInt(32)) * 1000) : undefined };
+  }
+  if (host === "x.com" || host === "twitter.com") {
+    const id = u.pathname.match(/\/status\/(\d{15,})/)?.[1];
+    return { platform: "x", date: id ? day(Number((BigInt(id) >> BigInt(22)) + BigInt(1288834974657))) : undefined };
+  }
+  if (host.endsWith("facebook.com") || host === "fb.watch") return { platform: "facebook" };
+  return { platform: null };
+}
 
 export function isResourceKey(k: string): k is ResourceKey {
   return k in resources;

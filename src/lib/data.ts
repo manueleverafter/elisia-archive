@@ -6,7 +6,7 @@ import "server-only";
 import { cacheLife, cacheTag } from "next/cache";
 import { db } from "./server/mongo";
 import { readSettings, type ImageValue, type LinkValue } from "./server/content";
-import type { FanAd, MediaItem, Polaroid, Post, PressItem, ProfileFact, Release, SocialLink } from "./types";
+import type { FanAd, FeedPost, MediaItem, Polaroid, Post, PressItem, ProfileFact, Release, SocialLink } from "./types";
 
 export const CONTENT_TAG = "content";
 
@@ -134,6 +134,26 @@ export async function getAds(): Promise<FanAd[]> {
     url: s(d.url),
     note: s(d.note) || undefined,
   }));
+}
+
+export async function getFeed(): Promise<FeedPost[]> {
+  "use cache";
+  cacheTag(CONTENT_TAG);
+  cacheLife("days");
+  return (await live("feed", { date: -1 }, 1000)).map((d) => {
+    const img = d.thumb as ImageValue | undefined;
+    return {
+      id: String(d._id),
+      platform: (s(d.platform) || "instagram") as FeedPost["platform"],
+      url: s(d.url),
+      caption: s(d.caption),
+      date: s(d.date),
+      tiktokId: s(d.tiktokId) || undefined,
+      thumbUrl: img?.url,
+      width: img?.width,
+      height: img?.height,
+    };
+  });
 }
 
 export async function getSocials(): Promise<SocialLink[]> {

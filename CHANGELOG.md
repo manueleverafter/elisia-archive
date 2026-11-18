@@ -4,6 +4,23 @@ What changed, and why. Newest first.
 
 ---
 
+## Socials gets official link cards and a feed
+
+Socials opens with **official links**: one tinted card per platform holding Elisia's accounts. Below it
+sit the group and ELFORT links, then **latest updates**, a feed of her posts with a platform filter and a
+Newest / Oldest switch.
+
+The new **Social feed** admin section takes a post link and works out the rest it can. The platform comes
+from the address. The **date** comes from the post id itself: Instagram post codes, TikTok video ids and X
+post ids all carry their creation time, so mods leave the date empty for those. Checked against posts with
+known dates; Instagram decodes to within two seconds.
+
+TikTok's public embed info no longer includes the thumbnail or caption, so a link alone can't fill a card.
+Pictures are uploaded like polaroids; a TikTok card without one shows a play button that loads TikTok's own
+player in place.
+
+---
+
 ## Fanbase becomes the ELFORT hub
 
 The Fanbase page now reads like a notice board for the fandom rather than a list of posts: pinned **fan

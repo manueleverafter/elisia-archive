@@ -58,7 +58,7 @@ function FieldRow({ field: f, folder, value, error }: { field: Field; folder: st
       );
       break;
     case "date":
-      control = <input {...common} type="date" defaultValue={str(value) || today} className={inputCls} />;
+      control = <input {...common} type="date" defaultValue={str(value) || (f.required ? today : "")} className={inputCls} />;
       break;
     case "number":
       control = <input {...common} type="text" inputMode="numeric" defaultValue={str(value)} placeholder={f.placeholder} className={inputCls} />;

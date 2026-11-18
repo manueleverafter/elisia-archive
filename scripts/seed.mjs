@@ -46,7 +46,7 @@ if (!(await settings.findOne({ _id: "site" }))) {
 } else console.log("settings: already set, skipped");
 
 // Indexes for the queries the site runs.
-for (const name of ["media", "polaroids", "releases", "posts", "ads", "press"])
+for (const name of ["media", "polaroids", "releases", "posts", "ads", "press", "feed"])
   await db.collection(name).createIndex({ deletedAt: 1, date: -1 });
 await db.collection("socials").createIndex({ deletedAt: 1, order: 1 });
 await db.collection("audit").createIndex({ at: -1 });

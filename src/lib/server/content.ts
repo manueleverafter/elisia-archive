@@ -1,6 +1,6 @@
 import "server-only";
 import { ObjectId, type Document, type Filter } from "mongodb";
-import { parseMediaUrl, resources, type Field, type ResourceDef, type ResourceKey } from "@/lib/resources";
+import { parseMediaUrl, parseSocialPost, resources, type Field, type ResourceDef, type ResourceKey } from "@/lib/resources";
 import { db } from "./mongo";
 import { PUBLIC_URL, deleteKeys, keyFromUrl } from "./r2";
 import type { SessionUser } from "./session";
@@ -142,6 +142,16 @@ export function parseForm(def: ResourceDef, fd: FormData) {
     else {
       data.platform = p.platform;
       data.youtubeId = p.youtubeId;
+    }
+  }
+  if (def.key === "feed" && typeof data.url === "string" && data.url) {
+    const p = parseSocialPost(data.url);
+    if (!p.platform) fieldErrors.url = "Use an Instagram, TikTok, X or Facebook post link.";
+    else {
+      data.platform = p.platform;
+      data.tiktokId = p.tiktokId;
+      if (!data.date) data.date = p.date;
+      if (!data.date) fieldErrors.date = "Couldn't read the date from this link. Please pick it.";
     }
   }
   return { data, fieldErrors };

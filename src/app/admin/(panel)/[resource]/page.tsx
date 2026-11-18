@@ -53,7 +53,7 @@ export default async function ResourceList({ params, searchParams }: PageProps<"
       ) : (
         <ul className="divide-y divide-border overflow-hidden rounded-3xl border border-border bg-surface shadow-card">
           {items.map((it) => {
-            const img = (it.image ?? it.cover) as ImageValue | undefined;
+            const img = (it.image ?? it.cover ?? it.thumb) as ImageValue | undefined;
             return (
               <li key={it.id} className="flex flex-wrap items-center gap-3 p-3 sm:p-4">
                 {img?.url && (
