@@ -1,36 +1,49 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# elisia archive ♡
 
-## Getting Started
+Unofficial fan archive for Elisia, kept by the **Elysian Fortress (ELFORT)**.
 
-First, run the development server:
+## Stack
+
+- **Next.js 16** (App Router, Cache Components) + **TypeScript**
+- **Tailwind CSS v4** with OKLCH theme tokens
+- **Supabase** (coming next): database, mod login, photo storage
+- Hosting: **Vercel** (free tier to start)
+
+## Run locally
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+npm run dev        # http://localhost:3000
+npm run build      # production build check
+npm run lint
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Where things live
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+| Path | What |
+|---|---|
+| `src/config/site.ts` | Site name, tagline, fandom name, nav, default theme |
+| `src/app/globals.css` | Color tokens for every theme + light/dark mode |
+| `src/lib/themes.ts` | Theme list shown in the picker + no-flash script |
+| `src/lib/data.ts` | Data layer (sample data now, Supabase later) |
+| `src/lib/types.ts` | Content model (media, polaroids, releases, posts, press, socials) |
+| `src/app/*` | Pages: home, media, photos, music, updates, press, socials, search, credits, privacy |
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Themes
 
-## Learn More
+Mode (Light / Dark / Auto) and color theme are separate choices. Each theme is
+defined by up to three hues in `globals.css`:
 
-To learn more about Next.js, take a look at the following resources:
+```css
+[data-theme="dreamy"] { --h: 355; --h2: 305; --h3: 235; --c: 0.16; }
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+To add a theme: add one line there, then add it to `themes` in `src/lib/themes.ts`.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Roadmap
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1. ✅ Layout, navigation, theme system, public pages with sample data
+2. ⏳ Supabase: database tables, mod login, roles (admin / editor)
+3. ⏳ Admin panel: add / edit / delete media, polaroids, posts, press, socials, profile, featured clip
+4. ⏳ Image upload with compression, search across real data, SEO polish
+5. ⏳ Deploy to Vercel, custom domain

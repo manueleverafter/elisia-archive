@@ -1,69 +1,207 @@
+import Link from "next/link";
 import Image from "next/image";
+import { ArrowDown, ArrowRight, Camera, Crown, ExternalLink, Music2, Pin, Play } from "lucide-react";
+import { GoalMeter } from "@/components/goal-meter";
+import { platformLabel } from "@/components/media-shared";
+import { PolaroidCard } from "@/components/polaroid";
+import { Card, CardTitle, Container, Pill, SampleBadge, formatDate } from "@/components/ui";
+import { siteConfig } from "@/config/site";
+import { getFeaturedMedia, getPolaroids, getPosts, getProfile, getReleases, getSocials } from "@/lib/data";
 
-export default function Home() {
+export default async function HomePage() {
+  const [featured, polaroids, releases, posts, profile, socials] = await Promise.all([
+    getFeaturedMedia(),
+    getPolaroids(),
+    getReleases(),
+    getPosts(),
+    getProfile(),
+    getSocials(),
+  ]);
+  const release = releases[0];
+  const pinned = posts.filter((p) => p.pinned);
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
+    <>
+      {/* HERO */}
+      <section className="relative isolate flex min-h-[78svh] items-end overflow-hidden">
+        <div className="absolute inset-0 -z-10">
+          {featured.youtubeId ? (
             <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
+              src={`https://i.ytimg.com/vi/${featured.youtubeId}/maxresdefault.jpg`}
+              alt=""
+              fill
+              priority
+              sizes="100vw"
+              className="kenburns object-cover"
             />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+          ) : (
+            <div className="bg-gradient kenburns absolute inset-0" />
+          )}
+          <div className="absolute inset-0 bg-gradient-to-t from-bg via-bg/60 to-transparent" />
         </div>
-      </main>
-    </div>
+
+        <Container className="pb-12 sm:pb-16">
+          <div className="max-w-2xl">
+            <div className="mb-3 flex flex-wrap items-center gap-2">
+              <Pill tone="primary">today&apos;s featured clip</Pill>
+              {featured.sample && <SampleBadge />}
+            </div>
+            <p className="text-xs font-semibold tracking-[0.2em] text-primary uppercase">
+              {featured.category} · {formatDate(featured.date)}
+            </p>
+            <h1 className="mt-2 font-display text-4xl leading-[1.05] tracking-tight sm:text-6xl">
+              {featured.title}
+            </h1>
+            {featured.description && <p className="mt-3 text-muted sm:text-lg">{featured.description}</p>}
+            <div className="mt-4 flex flex-wrap gap-2">
+              {featured.tags.map((t) => (
+                <Pill key={t}>#{t}</Pill>
+              ))}
+            </div>
+            <div className="mt-6 flex flex-wrap gap-3">
+              <a
+                href={featured.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 rounded-full bg-primary px-5 py-3 font-semibold text-primary-fg shadow-card transition hover:brightness-110"
+              >
+                <Play className="size-4 fill-current" /> Watch on {platformLabel[featured.platform]}
+              </a>
+              <a
+                href="#archive"
+                className="inline-flex items-center gap-2 rounded-full border border-border bg-surface/70 px-5 py-3 font-semibold backdrop-blur transition hover:bg-surface"
+              >
+                Browse the archive <ArrowDown className="size-4" />
+              </a>
+            </div>
+          </div>
+        </Container>
+      </section>
+
+      {/* ARCHIVE GRID */}
+      <Container>
+        <div id="archive" className="scroll-mt-20 flex flex-wrap items-end justify-between gap-3 pt-12 pb-6">
+          <h2 className="font-display text-3xl sm:text-4xl">
+            {siteConfig.fandom.greeting} <span className="text-gradient">welcome to the burrow</span> ♡
+          </h2>
+          <div className="flex gap-2">
+            <Pill>archive status: open</Pill>
+            <Pill>♡ for our bunny</Pill>
+          </div>
+        </div>
+
+        <div className="grid gap-5 lg:grid-cols-2">
+          <Card>
+            <CardTitle icon={<Crown className="size-5" />}>bunny facts</CardTitle>
+            <dl className="grid gap-4 sm:grid-cols-2">
+              {profile.map((f) => (
+                <div key={f.label}>
+                  <dt className="text-xs font-semibold tracking-wider text-muted uppercase">{f.label}</dt>
+                  <dd className="mt-0.5 font-medium">{f.value}</dd>
+                </div>
+              ))}
+            </dl>
+            {socials.length > 0 && (
+              <ul className="mt-6 flex flex-wrap gap-2 border-t border-border pt-4">
+                {socials.map((s) => (
+                  <li key={s.id}>
+                    <a
+                      href={s.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1 rounded-full bg-surface-2 px-3 py-1.5 text-sm hover:text-primary"
+                    >
+                      {s.handle} <ExternalLink className="size-3" />
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </Card>
+
+          <Card>
+            <CardTitle icon={<Camera className="size-5" />} aside={<Pill>HD downloadable</Pill>}>
+              polaroid snaps
+            </CardTitle>
+            <div className="grid grid-cols-2 gap-4 px-1">
+              {polaroids.slice(0, 2).map((p, i) => (
+                <PolaroidCard key={p.id} photo={p} tilt={i % 2 ? 2 : -2} />
+              ))}
+            </div>
+            <SeeAll href="/photos">see all polaroids</SeeAll>
+          </Card>
+
+          <Card>
+            <CardTitle
+              icon={<Music2 className="size-5" />}
+              aside={release?.goal && <Pill>goal: {release.goal.target.toLocaleString("en-US")}</Pill>}
+            >
+              music station
+            </CardTitle>
+            {release ? (
+              <>
+                <div className="rounded-2xl border border-border bg-surface-2 p-4">
+                  <div className="mb-3 flex items-center justify-between gap-2">
+                    <p className="font-semibold">{release.title}</p>
+                    {release.sample ? <SampleBadge /> : <Pill tone="primary">now tracking</Pill>}
+                  </div>
+                  {release.goal && <GoalMeter {...release.goal} />}
+                </div>
+                <ul className="mt-4 flex flex-wrap gap-2">
+                  {release.links.map((l) => (
+                    <li key={l.label}>
+                      <a
+                        href={l.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1 rounded-full border border-border px-3 py-1.5 text-sm font-medium hover:border-primary hover:text-primary"
+                      >
+                        {l.label} <ExternalLink className="size-3" />
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </>
+            ) : (
+              <p className="text-muted">No releases yet.</p>
+            )}
+            <SeeAll href="/music">streaming links</SeeAll>
+          </Card>
+
+          <Card>
+            <CardTitle icon={<Pin className="size-5" />} aside={<Pill>{pinned.length} pinned</Pill>}>
+              fan notes
+            </CardTitle>
+            {pinned.length ? (
+              <ul className="space-y-3">
+                {pinned.map((p) => (
+                  <li key={p.id} className="rounded-2xl bg-soft p-4">
+                    <p className="font-semibold">{p.title}</p>
+                    <p className="mt-1 text-sm text-muted">{p.body}</p>
+                    <p className="mt-2 text-xs text-muted">
+                      {p.author} · {formatDate(p.date)}
+                    </p>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="text-muted">No pinned notes yet. Check the bulletin board for the latest.</p>
+            )}
+            <SeeAll href="/updates">view full bulletin board</SeeAll>
+          </Card>
+        </div>
+      </Container>
+    </>
+  );
+}
+
+function SeeAll({ href, children }: { href: string; children: React.ReactNode }) {
+  return (
+    <Link
+      href={href}
+      className="mt-5 inline-flex items-center gap-1 text-sm font-semibold text-primary underline-offset-4 hover:underline"
+    >
+      {children} <ArrowRight className="size-4" />
+    </Link>
   );
 }

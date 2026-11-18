@@ -1,26 +1,140 @@
 @import "tailwindcss";
 
+/* ------------------------------------------------------------------
+   THEME TOKENS
+   Every color on the site comes from these variables. Each theme sets
+   up to three hues; light/dark mode set lightness + chroma. Colors are
+   OKLCH so every theme has the same perceived contrast.
+   ------------------------------------------------------------------ */
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --h: 355;  /* primary hue */
+  --h2: 345; /* accent hue */
+  --h3: 15;  /* third hue (gradients) */
+  --c: 0.17; /* chroma / vividness */
+}
+[data-theme="lavender"] { --h: 305; --h2: 290; --h3: 320; --c: 0.15; }
+[data-theme="peach"]    { --h: 40;  --h2: 30;  --h3: 60;  --c: 0.14; }
+[data-theme="mint"]     { --h: 165; --h2: 175; --h3: 150; --c: 0.12; }
+[data-theme="sky"]      { --h: 235; --h2: 225; --h3: 250; --c: 0.13; }
+[data-theme="dreamy"]   { --h: 355; --h2: 305; --h3: 235; --c: 0.16; }
+[data-theme="sunset"]   { --h: 5;   --h2: 45;  --h3: 85;  --c: 0.16; }
+
+/* Light mode (default) */
+:root {
+  color-scheme: light;
+  --bg: oklch(0.982 0.012 var(--h));
+  --surface: oklch(0.995 0.006 var(--h));
+  --surface-2: oklch(0.955 0.025 var(--h));
+  --border: oklch(0.87 0.055 var(--h));
+  --text: oklch(0.24 0.035 var(--h));
+  --muted: oklch(0.47 0.035 var(--h));
+  --primary: oklch(0.53 var(--c) var(--h));      /* ≥4.5:1 with white */
+  --primary-fg: oklch(0.99 0.005 var(--h));
+  --accent: oklch(0.72 var(--c) var(--h2));
+  --accent-3: oklch(0.8 calc(var(--c) * 0.85) var(--h3));
+  --soft: oklch(0.93 0.045 var(--h2));
+  --shadow: 0 1px 2px oklch(0.4 0.05 var(--h) / 0.08), 0 8px 24px oklch(0.4 0.08 var(--h) / 0.08);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+/* Dark mode: explicit choice… */
+:root[data-mode="dark"] {
+  color-scheme: dark;
+  --bg: oklch(0.165 0.022 var(--h));
+  --surface: oklch(0.205 0.03 var(--h));
+  --surface-2: oklch(0.25 0.038 var(--h));
+  --border: oklch(0.37 0.06 var(--h));
+  --text: oklch(0.96 0.012 var(--h));
+  --muted: oklch(0.76 0.03 var(--h));
+  --primary: oklch(0.79 var(--c) var(--h));      /* ≥4.5:1 with dark text */
+  --primary-fg: oklch(0.2 0.04 var(--h));
+  --accent: oklch(0.74 var(--c) var(--h2));
+  --accent-3: oklch(0.8 calc(var(--c) * 0.85) var(--h3));
+  --soft: oklch(0.3 0.06 var(--h2));
+  --shadow: 0 1px 2px oklch(0 0 0 / 0.3), 0 8px 24px oklch(0 0 0 / 0.25);
 }
-
+/* …or no JS yet / no choice: follow the system */
 @media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  :root:not([data-mode]) {
+    color-scheme: dark;
+    --bg: oklch(0.165 0.022 var(--h));
+    --surface: oklch(0.205 0.03 var(--h));
+    --surface-2: oklch(0.25 0.038 var(--h));
+    --border: oklch(0.37 0.06 var(--h));
+    --text: oklch(0.96 0.012 var(--h));
+    --muted: oklch(0.76 0.03 var(--h));
+    --primary: oklch(0.79 var(--c) var(--h));
+    --primary-fg: oklch(0.2 0.04 var(--h));
+    --accent: oklch(0.74 var(--c) var(--h2));
+    --accent-3: oklch(0.8 calc(var(--c) * 0.85) var(--h3));
+    --soft: oklch(0.3 0.06 var(--h2));
+    --shadow: 0 1px 2px oklch(0 0 0 / 0.3), 0 8px 24px oklch(0 0 0 / 0.25);
   }
 }
 
+:root {
+  --gradient: linear-gradient(120deg, var(--primary), var(--accent), var(--accent-3));
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-border: var(--border);
+  --color-text: var(--text);
+  --color-muted: var(--muted);
+  --color-primary: var(--primary);
+  --color-primary-fg: var(--primary-fg);
+  --color-accent: var(--accent);
+  --color-accent-3: var(--accent-3);
+  --color-soft: var(--soft);
+  --font-sans: var(--nf-body);
+  --font-display: var(--nf-display);
+  --font-hand: var(--nf-hand);
+  --shadow-card: var(--shadow);
+}
+
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--nf-body), system-ui, sans-serif;
+  transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+::selection { background: var(--accent); color: var(--primary-fg); }
+
+:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+.text-gradient {
+  background: var(--gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.bg-gradient { background: var(--gradient); }
+
+/* Soft ambient glow behind the page, tinted by the active theme. */
+.page-glow {
+  background:
+    radial-gradient(60rem 30rem at 10% -10%, oklch(from var(--accent) l c h / 0.14), transparent 60%),
+    radial-gradient(50rem 30rem at 100% 0%, oklch(from var(--accent-3) l c h / 0.12), transparent 60%);
+}
+
+@keyframes kenburns {
+  from { transform: scale(1.04); }
+  to { transform: scale(1.14) translate(-1%, -1%); }
+}
+.kenburns { animation: kenburns 18s ease-in-out infinite alternate; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
