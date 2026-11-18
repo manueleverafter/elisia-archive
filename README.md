@@ -40,6 +40,14 @@ defined by up to three hues in `globals.css`:
 
 To add a theme: add one line there, then add it to `themes` in `src/lib/themes.ts`.
 
+## Known limits
+
+- **Sample data only.** Everything marked *sample* is a placeholder until the database and admin panel exist.
+- **Theme choice is per browser.** It lives in the visitor's local storage, so a phone and a PC each
+  remember their own.
+- **Photos belong to their owners.** The code is MIT licensed; the photos, videos and articles the archive
+  links to are not, and stay credited to their sources.
+
 ## Roadmap
 
 1. ✅ Layout, navigation, theme system, public pages with sample data
@@ -47,3 +55,37 @@ To add a theme: add one line there, then add it to `themes` in `src/lib/themes.t
 3. ⏳ Admin panel: add / edit / delete media, polaroids, posts, press, socials, profile, featured clip
 4. ⏳ Image upload with compression, search across real data, SEO polish
 5. ⏳ Deploy to Vercel, custom domain
+
+---
+
+## Notes for anyone editing this
+
+Things that broke during development and are easy to reintroduce.
+
+**A `"use client"` file can only hand components to the server.** Constants and helpers exported from a
+client file arrive in a server component as empty references. That is how "Watch on YouTube" once rendered
+as "Watch on". Shared, non-interactive helpers live in `src/components/media-shared.tsx`; keep them there.
+
+**The header's blur traps fixed elements.** `backdrop-filter` on the sticky header makes it the containing
+block for anything `position: fixed` inside it, so the mobile menu would open inside a 64px bar. The menu
+is portalled to `document.body`. Do the same for any future overlay launched from the header.
+
+**Colors come from tokens, never literals.** Use `bg-surface`, `text-muted`, `text-primary` and friends. A
+hard-coded hex looks right in one theme and wrong in the other thirteen.
+
+**Text on `bg-primary` uses `text-primary-fg`, never `text-white`.** Light-mode primaries are deep enough
+for white text; dark-mode primaries are pastel and need dark text. The token flips per mode.
+
+**Theme state is read through `useSyncExternalStore`.** The server can't know the visitor's theme, so the
+picker renders a fixed default on the server and the real value after hydration. Reading `localStorage`
+during render instead causes a hydration error.
+
+**Dates are formatted in UTC on the server.** `formatDate()` pins `timeZone: "UTC"` so the server and the
+browser agree on the date.
+
+**Cache Components is on.** Anything that reads the request (`searchParams`, cookies) must sit inside
+`<Suspense>`. See `src/app/search/page.tsx`.
+
+## License
+
+Code: MIT, see [LICENSE](LICENSE). Content shown on the site belongs to its original owners.
