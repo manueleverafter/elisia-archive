@@ -2,9 +2,10 @@ import Link from "next/link";
 import Image from "next/image";
 import { ArrowDown, ArrowRight, Camera, Crown, ExternalLink, Music2, Pin, Play } from "lucide-react";
 import { GoalMeter } from "@/components/goal-meter";
+import { HeroVideo } from "@/components/hero-video";
 import { platformLabel } from "@/components/media-shared";
 import { PolaroidCard } from "@/components/polaroid";
-import { Card, CardTitle, Container, Pill, SampleBadge, formatDate } from "@/components/ui";
+import { Card, CardTitle, Container, Pill, formatDate } from "@/components/ui";
 import { siteConfig } from "@/config/site";
 import { getFeaturedMedia, getPolaroids, getPosts, getProfile, getReleases, getSocials } from "@/lib/data";
 
@@ -20,63 +21,76 @@ export default async function HomePage() {
   const release = releases[0];
   const pinned = posts.filter((p) => p.pinned);
 
+  const heroContent = (
+        <Container className="pb-12 sm:pb-16">
+          {featured ? (
+            <div className="max-w-2xl">
+              <div className="mb-3 flex flex-wrap items-center gap-2">
+                <Pill tone="primary">today&apos;s featured clip</Pill>
+              </div>
+              <p className="text-xs font-semibold tracking-[0.2em] text-primary uppercase">
+                {featured.category} · {formatDate(featured.date)}
+              </p>
+              <h1 className="mt-2 font-display text-4xl leading-[1.05] tracking-tight sm:text-6xl">{featured.title}</h1>
+              {featured.description && <p className="mt-3 text-muted sm:text-lg">{featured.description}</p>}
+              <div className="mt-4 flex flex-wrap gap-2">
+                {featured.tags.map((t) => (
+                  <Pill key={t}>#{t}</Pill>
+                ))}
+              </div>
+              <div className="mt-6 flex flex-wrap gap-3">
+                <a
+                  href={featured.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 rounded-full bg-primary px-5 py-3 font-semibold text-primary-fg shadow-card transition hover:brightness-110"
+                >
+                  <Play className="size-4 fill-current" /> Watch on {platformLabel[featured.platform]}
+                </a>
+                <BrowseButton />
+              </div>
+            </div>
+          ) : (
+            <div className="max-w-2xl">
+              <h1 className="font-display text-5xl leading-[1.05] tracking-tight sm:text-7xl">{siteConfig.name}</h1>
+              <p className="mt-3 text-lg text-muted">{siteConfig.tagline}</p>
+              <div className="mt-6">
+                <BrowseButton />
+              </div>
+            </div>
+          )}
+        </Container>
+  );
+
   return (
     <>
       {/* HERO */}
-      <section className="relative isolate flex min-h-[78svh] items-end overflow-hidden">
-        <div className="absolute inset-0 -z-10">
-          {featured.youtubeId ? (
+      {featured?.youtubeId ? (
+        <HeroVideo
+          youtubeId={featured.youtubeId}
+          title={featured.title}
+          poster={
             <Image
               src={`https://i.ytimg.com/vi/${featured.youtubeId}/maxresdefault.jpg`}
               alt=""
               fill
               priority
               sizes="100vw"
-              className="kenburns object-cover"
+              className="object-cover"
             />
-          ) : (
+          }
+        >
+          {heroContent}
+        </HeroVideo>
+      ) : (
+        <section className="relative isolate flex min-h-[78svh] items-end overflow-hidden">
+          <div className="absolute inset-0 -z-10">
             <div className="bg-gradient kenburns absolute inset-0" />
-          )}
-          <div className="absolute inset-0 bg-gradient-to-t from-bg via-bg/60 to-transparent" />
-        </div>
-
-        <Container className="pb-12 sm:pb-16">
-          <div className="max-w-2xl">
-            <div className="mb-3 flex flex-wrap items-center gap-2">
-              <Pill tone="primary">today&apos;s featured clip</Pill>
-              {featured.sample && <SampleBadge />}
-            </div>
-            <p className="text-xs font-semibold tracking-[0.2em] text-primary uppercase">
-              {featured.category} · {formatDate(featured.date)}
-            </p>
-            <h1 className="mt-2 font-display text-4xl leading-[1.05] tracking-tight sm:text-6xl">
-              {featured.title}
-            </h1>
-            {featured.description && <p className="mt-3 text-muted sm:text-lg">{featured.description}</p>}
-            <div className="mt-4 flex flex-wrap gap-2">
-              {featured.tags.map((t) => (
-                <Pill key={t}>#{t}</Pill>
-              ))}
-            </div>
-            <div className="mt-6 flex flex-wrap gap-3">
-              <a
-                href={featured.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 rounded-full bg-primary px-5 py-3 font-semibold text-primary-fg shadow-card transition hover:brightness-110"
-              >
-                <Play className="size-4 fill-current" /> Watch on {platformLabel[featured.platform]}
-              </a>
-              <a
-                href="#archive"
-                className="inline-flex items-center gap-2 rounded-full border border-border bg-surface/70 px-5 py-3 font-semibold backdrop-blur transition hover:bg-surface"
-              >
-                Browse the archive <ArrowDown className="size-4" />
-              </a>
-            </div>
+            <div className="absolute inset-0 bg-gradient-to-t from-bg via-bg/60 to-transparent" />
           </div>
-        </Container>
-      </section>
+          {heroContent}
+        </section>
+      )}
 
       {/* ARCHIVE GRID */}
       <Container>
@@ -93,9 +107,10 @@ export default async function HomePage() {
         <div className="grid gap-5 lg:grid-cols-2">
           <Card>
             <CardTitle icon={<Crown className="size-5" />}>bunny facts</CardTitle>
+            {profile.length === 0 && <p className="text-muted">Facts coming soon.</p>}
             <dl className="grid gap-4 sm:grid-cols-2">
-              {profile.map((f) => (
-                <div key={f.label}>
+              {profile.map((f, i) => (
+                <div key={i}>
                   <dt className="text-xs font-semibold tracking-wider text-muted uppercase">{f.label}</dt>
                   <dd className="mt-0.5 font-medium">{f.value}</dd>
                 </div>
@@ -103,7 +118,7 @@ export default async function HomePage() {
             </dl>
             {socials.length > 0 && (
               <ul className="mt-6 flex flex-wrap gap-2 border-t border-border pt-4">
-                {socials.map((s) => (
+                {socials.slice(0, 4).map((s) => (
                   <li key={s.id}>
                     <a
                       href={s.url}
@@ -123,6 +138,7 @@ export default async function HomePage() {
             <CardTitle icon={<Camera className="size-5" />} aside={<Pill>HD downloadable</Pill>}>
               polaroid snaps
             </CardTitle>
+            {polaroids.length === 0 && <p className="text-muted">The first polaroids are on their way.</p>}
             <div className="grid grid-cols-2 gap-4 px-1">
               {polaroids.slice(0, 2).map((p, i) => (
                 <PolaroidCard key={p.id} photo={p} tilt={i % 2 ? 2 : -2} />
@@ -143,7 +159,7 @@ export default async function HomePage() {
                 <div className="rounded-2xl border border-border bg-surface-2 p-4">
                   <div className="mb-3 flex items-center justify-between gap-2">
                     <p className="font-semibold">{release.title}</p>
-                    {release.sample ? <SampleBadge /> : <Pill tone="primary">now tracking</Pill>}
+                    <Pill tone="primary">now tracking</Pill>
                   </div>
                   {release.goal && <GoalMeter {...release.goal} />}
                 </div>
@@ -192,6 +208,17 @@ export default async function HomePage() {
         </div>
       </Container>
     </>
+  );
+}
+
+function BrowseButton() {
+  return (
+    <a
+      href="#archive"
+      className="inline-flex items-center gap-2 rounded-full border border-border bg-surface/70 px-5 py-3 font-semibold backdrop-blur transition hover:bg-surface"
+    >
+      Browse the archive <ArrowDown className="size-4" />
+    </a>
   );
 }
 

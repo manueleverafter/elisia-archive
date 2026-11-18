@@ -26,11 +26,14 @@ function write(key: string, value: string) {
   }
 }
 
+const valid = (t: string | null | undefined): t is ThemeId => themes.some((x) => x.id === t);
+
 function load(): Prefs {
   const t = read(THEME_KEY);
   const m = read(MODE_KEY);
+  const siteDefault = document.documentElement.dataset.defaultTheme;
   return {
-    theme: themes.some((x) => x.id === t) ? (t as ThemeId) : siteConfig.defaultTheme,
+    theme: valid(t) ? t : valid(siteDefault) ? siteDefault : siteConfig.defaultTheme,
     mode: m === "light" || m === "dark" ? m : "system",
   };
 }

@@ -17,7 +17,12 @@ export default async function MusicPage() {
           {releases.map((r) => (
             <li key={r.id}>
               <Card as="article" className="flex h-full flex-col gap-5 sm:flex-row">
-                <Placeholder label={r.title} className="aspect-square w-full shrink-0 rounded-2xl sm:w-40" />
+                {r.coverUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={r.coverUrl} alt={`${r.title} cover`} loading="lazy" className="aspect-square w-full shrink-0 rounded-2xl object-cover sm:w-40" />
+                ) : (
+                  <Placeholder label={r.title} className="aspect-square w-full shrink-0 rounded-2xl sm:w-40" />
+                )}
                 <div className="flex-1">
                   <div className="flex flex-wrap items-center gap-2">
                     <Pill>{r.type}</Pill>

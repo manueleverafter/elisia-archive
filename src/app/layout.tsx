@@ -1,8 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import { Fraunces, Gochi_Hand, Outfit } from "next/font/google";
-import { SiteFooter } from "@/components/site-footer";
-import { SiteHeader } from "@/components/site-header";
+import { Suspense } from "react";
 import { siteConfig } from "@/config/site";
+import { getSiteSettings } from "@/lib/data";
 import { themeInitScript } from "@/lib/themes";
 import "./globals.css";
 
@@ -30,11 +30,15 @@ export const viewport: Viewport = {
   ],
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default async function RootLayout({ children }: LayoutProps<"/">) {
+  // The site-wide default theme is chosen by admins; a visitor's own pick
+  // (stored in their browser) still wins.
+  const { defaultTheme } = await getSiteSettings();
   return (
     <html
       lang="en"
-      data-theme={siteConfig.defaultTheme}
+      data-theme={defaultTheme}
+      data-default-theme={defaultTheme}
       suppressHydrationWarning
       className={`${body.variable} ${display.variable} ${hand.variable} antialiased`}
     >
@@ -49,11 +53,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           Skip to content
         </a>
         <div aria-hidden className="page-glow pointer-events-none fixed inset-0 -z-10" />
-        <SiteHeader />
-        <main id="main" className="flex-1">
-          {children}
-        </main>
-        <SiteFooter />
+        <Suspense>{children}</Suspense>
       </body>
     </html>
   );

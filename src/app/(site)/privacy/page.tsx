@@ -15,8 +15,9 @@ export default function PrivacyPage() {
           remembers them next time.
         </p>
         <p>
-          Embedded videos (YouTube, X, TikTok) only load after you press play. Once loaded, those platforms
-          apply their own privacy policies.
+          The featured video on the home page plays muted from YouTube&apos;s privacy-enhanced mode
+          (youtube-nocookie.com). Other embedded videos only load after you press play. Once loaded, those
+          platforms apply their own privacy policies.
         </p>
         <p>Mod accounts are used only to manage the archive&apos;s content.</p>
       </Card>

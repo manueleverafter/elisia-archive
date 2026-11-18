@@ -1,5 +1,8 @@
 @import "tailwindcss";
 
+/* `dark:` follows the site's own mode switch, not only the OS setting. */
+@custom-variant dark (&:where([data-mode="dark"], [data-mode="dark"] *));
+
 /* ------------------------------------------------------------------
    THEME TOKENS
    Every color on the site comes from these variables. Each theme sets

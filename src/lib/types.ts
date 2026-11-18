@@ -22,6 +22,10 @@ export type Polaroid = {
   id: string;
   caption: string;
   imageUrl?: string;
+  /** Full-size original, for HD download */
+  originalUrl?: string;
+  width?: number;
+  height?: number;
   credit: string;
   creditUrl?: string;
   date: string;

@@ -1,200 +1,157 @@
-// Data access layer. Right now it returns SAMPLE data (marked with
-// `sample: true` and shown with a "sample" badge). Once Supabase is
-// connected, only the bodies of these functions change.
+// Public data layer. Every read is cached and tagged "content"; any change
+// in the admin panel expires the tag, so visitors see updates immediately
+// while the database is only hit when something actually changed.
 
-import { siteConfig } from "@/config/site";
-import type {
-  MediaItem,
-  Polaroid,
-  Post,
-  PressItem,
-  ProfileFact,
-  Release,
-  SocialLink,
-} from "./types";
+import "server-only";
+import { cacheLife, cacheTag } from "next/cache";
+import { db } from "./server/mongo";
+import { readSettings, type ImageValue, type LinkValue } from "./server/content";
+import type { MediaItem, Polaroid, Post, PressItem, ProfileFact, Release, SocialLink } from "./types";
 
-const media: MediaItem[] = [
-  {
-    id: "m1",
-    title: "Sample: Debut stage highlight",
-    platform: "youtube",
-    url: "https://www.youtube.com/",
-    category: "performance",
-    tags: ["stage", "debut"],
-    date: "2026-10-30",
-    description: "Placeholder. Mods will replace this with a real video link.",
-    featured: true,
-    sample: true,
-  },
-  {
-    id: "m2",
-    title: "Sample: Behind the scenes vlog",
-    platform: "youtube",
-    url: "https://www.youtube.com/",
-    category: "behind",
-    tags: ["vlog"],
-    date: "2026-10-12",
-    sample: true,
-  },
-  {
-    id: "m3",
-    title: "Sample: Fancam clip",
-    platform: "tiktok",
-    url: "https://www.tiktok.com/",
-    category: "fancam",
-    tags: ["fancam"],
-    date: "2026-09-28",
-    sample: true,
-  },
-  {
-    id: "m4",
-    title: "Sample: Variety show moment",
-    platform: "x",
-    url: "https://x.com/",
-    category: "variety",
-    tags: ["variety", "funny"],
-    date: "2026-09-02",
-    sample: true,
-  },
-  {
-    id: "m5",
-    title: "Sample: Live stream recap",
-    platform: "youtube",
-    url: "https://www.youtube.com/",
-    category: "live",
-    tags: ["live"],
-    date: "2026-08-15",
-    sample: true,
-  },
-  {
-    id: "m6",
-    title: "Sample: Dance practice",
-    platform: "x",
-    url: "https://x.com/",
-    category: "performance",
-    tags: ["dance"],
-    date: "2026-07-21",
-    sample: true,
-  },
-];
+export const CONTENT_TAG = "content";
 
-const polaroids: Polaroid[] = [
-  { id: "p1", caption: "Sample: bunny ears day", credit: "@fansite", date: "2026-11-02", tags: ["cute"], sample: true },
-  { id: "p2", caption: "Sample: pink era photoshoot", credit: "@official", date: "2026-10-20", tags: ["photoshoot"], sample: true },
-  { id: "p3", caption: "Sample: airport fashion", credit: "@fansite", date: "2026-10-05", tags: ["airport"], sample: true },
-  { id: "p4", caption: "Sample: fan meeting", credit: "@fansite", date: "2026-09-18", tags: ["event"], sample: true },
-  { id: "p5", caption: "Sample: selca", credit: "@official", date: "2026-09-01", tags: ["selca"], sample: true },
-  { id: "p6", caption: "Sample: stage close-up", credit: "@fansite", date: "2026-08-22", tags: ["stage"], sample: true },
-];
+type Doc = Record<string, unknown> & { _id: unknown };
 
-const releases: Release[] = [
-  {
-    id: "r1",
-    title: "Sample release",
-    type: "group",
-    date: "2026-10-01",
-    links: [
-      { label: "Spotify", url: "https://open.spotify.com/" },
-      { label: "Apple Music", url: "https://music.apple.com/" },
-      { label: "YouTube Music", url: "https://music.youtube.com/" },
-      { label: "YouTube", url: "https://www.youtube.com/" },
-    ],
-    goal: { label: "MV views", current: 6_400_000, target: 10_000_000 },
-    sample: true,
-  },
-];
-
-const posts: Post[] = [
-  {
-    id: "u1",
-    title: `Welcome to the burrow, ${siteConfig.fandom.shortName}!`,
-    body: `This is the new home for everything ${siteConfig.idol.name}. Mods are filling it in, so check back often.`,
-    date: "2026-11-18",
-    author: "ELFORT admins",
-    pinned: true,
-    tag: "announcement",
-  },
-  {
-    id: "u2",
-    title: "Sample: streaming party this weekend",
-    body: "Placeholder post. Mods can write updates like this from the admin panel.",
-    date: "2026-11-10",
-    author: "mod",
-    tag: "project",
-    sample: true,
-  },
-  {
-    id: "u3",
-    title: "Sample: birthday project sign-ups",
-    body: "Placeholder post for a fan project.",
-    date: "2026-11-01",
-    author: "mod",
-    tag: "event",
-    sample: true,
-  },
-];
-
-const press: PressItem[] = Array.from({ length: 8 }, (_, i) => ({
-  id: `n${i + 1}`,
-  headline: `Sample headline #${i + 1}: news article mentioning ${siteConfig.idol.name}`,
-  outlet: ["Outlet A", "Outlet B", "Outlet C"][i % 3],
-  url: "https://example.com/",
-  date: `2026-${String(11 - Math.floor(i / 3)).padStart(2, "0")}-${String(20 - i).padStart(2, "0")}`,
-  era: i < 4 ? "Current era" : "Pre-debut",
-  mention: i % 2 ? "mention" : "feature",
-  sample: true,
-}));
-
-const socials: SocialLink[] = [
-  {
-    id: "s1",
-    label: "UNIS Instagram",
-    handle: "@unis_offcl",
-    url: "https://www.instagram.com/unis_offcl/",
-    platform: "instagram",
-    owner: "group",
-  },
-];
-
-const profile: ProfileFact[] = [
-  { label: "Name", value: siteConfig.idol.name },
-  { label: "Nicknames", value: siteConfig.idol.nicknames.join(", ") },
-  { label: "Fandom", value: `${siteConfig.fandom.name} (${siteConfig.fandom.shortName})` },
-  { label: "Favorite color", value: "Pink" },
-];
-
-const byDateDesc = <T extends { date: string }>(a: T, b: T) => b.date.localeCompare(a.date);
-
-export async function getFeaturedMedia() {
-  return media.find((m) => m.featured) ?? media[0];
+async function live(name: string, sort: Record<string, 1 | -1>, limit = 500): Promise<Doc[]> {
+  return (await db
+    .collection(name)
+    .find({ deletedAt: null })
+    .sort(sort)
+    .limit(limit)
+    .toArray()) as Doc[];
 }
+
+const s = (v: unknown) => (typeof v === "string" ? v : "");
+const arr = <T,>(v: unknown) => (Array.isArray(v) ? (v as T[]) : []);
+
+function toMedia(d: Doc): MediaItem {
+  return {
+    id: String(d._id),
+    title: s(d.title),
+    platform: (s(d.platform) || "youtube") as MediaItem["platform"],
+    url: s(d.url),
+    youtubeId: s(d.youtubeId) || undefined,
+    category: (s(d.category) || "performance") as MediaItem["category"],
+    tags: arr<string>(d.tags),
+    date: s(d.date),
+    description: s(d.description) || undefined,
+    featured: !!d.featured,
+  };
+}
+
 export async function getMedia() {
-  return [...media].sort(byDateDesc);
+  "use cache";
+  cacheTag(CONTENT_TAG);
+  cacheLife("days");
+  return (await live("media", { date: -1 })).map(toMedia);
 }
-export async function getPolaroids() {
-  return [...polaroids].sort(byDateDesc);
+
+export async function getFeaturedMedia(): Promise<MediaItem | null> {
+  const media = await getMedia();
+  return media.find((m) => m.featured) ?? media[0] ?? null;
 }
-export async function getReleases() {
-  return [...releases].sort(byDateDesc);
+
+export async function getPolaroids(): Promise<Polaroid[]> {
+  "use cache";
+  cacheTag(CONTENT_TAG);
+  cacheLife("days");
+  return (await live("polaroids", { date: -1 })).map((d) => {
+    const img = d.image as ImageValue | undefined;
+    return {
+      id: String(d._id),
+      caption: s(d.caption),
+      imageUrl: img?.url,
+      originalUrl: img?.originalUrl,
+      width: img?.width,
+      height: img?.height,
+      credit: s(d.credit),
+      creditUrl: s(d.creditUrl) || undefined,
+      date: s(d.date),
+      tags: arr<string>(d.tags),
+    };
+  });
 }
-export async function getPosts() {
-  return [...posts].sort((a, b) => Number(!!b.pinned) - Number(!!a.pinned) || byDateDesc(a, b));
+
+export async function getReleases(): Promise<Release[]> {
+  "use cache";
+  cacheTag(CONTENT_TAG);
+  cacheLife("days");
+  return (await live("releases", { date: -1 })).map((d) => {
+    const target = Number(d.goalTarget) || 0;
+    return {
+      id: String(d._id),
+      title: s(d.title),
+      type: (s(d.type) || "single") as Release["type"],
+      date: s(d.date),
+      coverUrl: (d.cover as ImageValue | undefined)?.url,
+      links: arr<LinkValue>(d.links),
+      goal: target
+        ? { label: s(d.goalLabel) || "Goal", current: Number(d.goalCurrent) || 0, target }
+        : undefined,
+    };
+  });
 }
-export async function getPress() {
-  return [...press].sort(byDateDesc);
+
+export async function getPosts(): Promise<Post[]> {
+  "use cache";
+  cacheTag(CONTENT_TAG);
+  cacheLife("days");
+  return (await live("posts", { pinned: -1, date: -1 })).map((d) => ({
+    id: String(d._id),
+    title: s(d.title),
+    body: s(d.body),
+    date: s(d.date),
+    author: s(d.author) || "mods",
+    pinned: !!d.pinned,
+    tag: (s(d.tag) || "announcement") as Post["tag"],
+  }));
 }
-export async function getSocials() {
-  return socials;
+
+export async function getPress(): Promise<PressItem[]> {
+  "use cache";
+  cacheTag(CONTENT_TAG);
+  cacheLife("days");
+  return (await live("press", { date: -1 }, 2000)).map((d) => ({
+    id: String(d._id),
+    headline: s(d.headline),
+    outlet: s(d.outlet),
+    url: s(d.url),
+    date: s(d.date),
+    era: s(d.era) || "Other",
+    mention: (s(d.mention) || "mention") as PressItem["mention"],
+  }));
 }
-export async function getProfile() {
-  return profile;
+
+export async function getSocials(): Promise<SocialLink[]> {
+  "use cache";
+  cacheTag(CONTENT_TAG);
+  cacheLife("days");
+  return (await live("socials", { order: 1, label: 1 })).map((d) => ({
+    id: String(d._id),
+    label: s(d.label),
+    handle: s(d.handle),
+    url: s(d.url),
+    platform: (s(d.platform) || "instagram") as SocialLink["platform"],
+    owner: (s(d.owner) || "official") as SocialLink["owner"],
+  }));
+}
+
+export async function getSiteSettings() {
+  "use cache";
+  cacheTag(CONTENT_TAG);
+  cacheLife("days");
+  return readSettings();
+}
+
+export async function getProfile(): Promise<ProfileFact[]> {
+  return (await getSiteSettings()).profile;
 }
 
 export async function searchAll(q: string) {
   const needle = q.trim().toLowerCase();
   if (!needle) return [];
-  const hit = (...fields: (string | undefined)[]) =>
-    fields.some((f) => f?.toLowerCase().includes(needle));
+  const [media, polaroids, posts, press] = await Promise.all([getMedia(), getPolaroids(), getPosts(), getPress()]);
+  const hit = (...fields: (string | undefined)[]) => fields.some((f) => f?.toLowerCase().includes(needle));
   return [
     ...media
       .filter((m) => hit(m.title, m.description, m.date, ...m.tags))
@@ -208,5 +165,7 @@ export async function searchAll(q: string) {
     ...press
       .filter((p) => hit(p.headline, p.outlet, p.date, p.era))
       .map((p) => ({ kind: "Press", title: p.headline, href: "/press", date: p.date })),
-  ].sort(byDateDesc);
+  ]
+    .sort((a, b) => b.date.localeCompare(a.date))
+    .slice(0, 100);
 }
