@@ -2,6 +2,8 @@
 
 Unofficial fan archive for Elisia, kept by the **Elysian Fortress (ELFORT)**.
 
+**Live:** https://elisia-archive.vercel.app
+
 Public site for fans, plus an admin panel at `/admin` where mods add, edit and delete content themselves:
 videos, polaroids, music, fanbase posts, press, socials, profile facts and the site's default theme.
 
@@ -95,7 +97,8 @@ To add a theme: add one line there, then add it to `themes` in `src/lib/themes.t
 2. ✅ Database, mod login, roles, invites
 3. ✅ Admin panel for every section, trash, activity log, photo uploads
 4. ✅ Video hero with sound / pause / restart
-5. ⏳ Deploy to Vercel, then a custom domain
+5. ✅ Deployed on Vercel: every push to `main` goes live automatically
+6. ⏳ Custom domain (optional)
 
 ---
 
