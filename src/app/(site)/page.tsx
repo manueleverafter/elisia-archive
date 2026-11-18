@@ -4,7 +4,7 @@ import { ArrowDown, ArrowRight, Camera, Crown, ExternalLink, Music2, Pin, Play }
 import { GoalMeter } from "@/components/goal-meter";
 import { HeroVideo } from "@/components/hero-video";
 import { platformLabel } from "@/components/media-shared";
-import { PolaroidCard } from "@/components/polaroid";
+import { PolaroidGallery } from "@/components/polaroid-gallery";
 import { Card, CardTitle, Container, Pill, formatDate } from "@/components/ui";
 import { siteConfig } from "@/config/site";
 import { getFeaturedMedia, getPolaroids, getPosts, getProfile, getReleases, getSocials } from "@/lib/data";
@@ -139,11 +139,7 @@ export default async function HomePage() {
               polaroid snaps
             </CardTitle>
             {polaroids.length === 0 && <p className="text-muted">The first polaroids are on their way.</p>}
-            <div className="grid grid-cols-2 gap-4 px-1">
-              {polaroids.slice(0, 2).map((p, i) => (
-                <PolaroidCard key={p.id} photo={p} tilt={i % 2 ? 2 : -2} />
-              ))}
-            </div>
+            <PolaroidGallery photos={polaroids.slice(0, 2)} tilts={[-2, 2]} className="grid grid-cols-2 gap-4 px-1" />
             <SeeAll href="/photos">see all polaroids</SeeAll>
           </Card>
 

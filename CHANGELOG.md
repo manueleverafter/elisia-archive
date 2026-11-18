@@ -4,6 +4,22 @@ What changed, and why. Newest first.
 
 ---
 
+## Polaroids open into a viewer
+
+Tapping a print now opens it large with its caption, credit, date and size, a **source** link back to
+the original post, and **HD download**. Arrow keys, the on-screen arrows and a swipe on phones move between
+photos; Esc, the close button or a tap outside closes it. It is a native `<dialog>`, so focus and Esc
+behave without extra code.
+
+HD download fetches the file before saving it, because browsers ignore the `download` attribute on links
+to another domain and would just open the image in a tab. The file is saved as
+`elisia-<caption>-<date>.jpg` rather than R2's internal name.
+
+The profile facts editor got the full page width; next to the theme card the value boxes were squeezed
+to nothing.
+
+---
+
 ## The featured clip plays behind the title
 
 The home hero now plays the featured YouTube clip silently in the background, with **sound**, **pause** and

@@ -3,7 +3,16 @@ import type { Polaroid } from "@/lib/types";
 import { Placeholder } from "./media-shared";
 import { formatDate } from "./ui";
 
-export function PolaroidCard({ photo, tilt = 0 }: { photo: Polaroid; tilt?: number }) {
+export function PolaroidCard({
+  photo,
+  tilt = 0,
+  interactive = true,
+}: {
+  photo: Polaroid;
+  tilt?: number;
+  /** false when the whole card is already a button (gallery), so no nested links */
+  interactive?: boolean;
+}) {
   return (
     <figure
       style={{ rotate: `${tilt}deg` }}
@@ -26,22 +35,27 @@ export function PolaroidCard({ photo, tilt = 0 }: { photo: Polaroid; tilt?: numb
         ) : (
           <Placeholder label={photo.caption} className="absolute inset-0" />
         )}
-        {photo.originalUrl && (
-          <a
-            href={photo.originalUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="absolute top-2 right-2 inline-flex items-center gap-1 rounded-full bg-surface/90 px-2.5 py-1 text-[11px] font-bold text-text shadow-card transition hover:bg-primary hover:text-primary-fg"
-            aria-label={`Open the HD original of ${photo.caption}`}
-          >
-            <Download className="size-3" /> HD
-          </a>
-        )}
+        {photo.originalUrl &&
+          (interactive ? (
+            <a
+              href={photo.originalUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="absolute top-2 right-2 inline-flex items-center gap-1 rounded-full bg-surface/90 px-2.5 py-1 text-[11px] font-bold text-text shadow-card transition hover:bg-primary hover:text-primary-fg"
+              aria-label={`Open the HD original of ${photo.caption}`}
+            >
+              <Download className="size-3" /> HD
+            </a>
+          ) : (
+            <span className="absolute top-2 right-2 rounded-full bg-surface/90 px-2.5 py-1 text-[11px] font-bold text-text shadow-card">
+              HD
+            </span>
+          ))}
       </div>
       <figcaption className="mt-2.5 text-center">
         <span className="block font-hand text-lg leading-tight">{photo.caption}</span>
         <span className="mt-1 block text-xs text-muted">
-          {photo.creditUrl ? (
+          {interactive && photo.creditUrl ? (
             <a href={photo.creditUrl} target="_blank" rel="noopener noreferrer" className="underline hover:text-primary">
               {photo.credit}
             </a>

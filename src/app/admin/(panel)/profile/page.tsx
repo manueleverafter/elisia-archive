@@ -12,7 +12,7 @@ export default async function ProfilePage() {
   return (
     <>
       <AdminTitle title="profile & theme" />
-      <div className="grid gap-6 xl:grid-cols-2">
+      <div className="grid max-w-3xl gap-6">
         <Panel>
           <h2 className="font-display text-xl">Profile facts</h2>
           <p className="mb-4 text-sm text-muted">Shown in the “bunny facts” card on the home page, in this order.</p>
