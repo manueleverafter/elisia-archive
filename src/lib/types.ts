@@ -51,6 +51,7 @@ export type Post = {
   date: string;
   author: string;
   pinned?: boolean;
+  link?: string;
   tag: "announcement" | "project" | "event" | "notice";
   sample?: boolean;
 };
@@ -62,7 +63,7 @@ export type PressItem = {
   url: string;
   date: string;
   era: string;
-  mention: "feature" | "mention";
+  mention: "feature" | "interview" | "mention";
   sample?: boolean;
 };
 
@@ -72,7 +73,15 @@ export type SocialLink = {
   handle: string;
   url: string;
   platform: Platform | "spotify" | "weverse" | "facebook";
-  owner: "official" | "group" | "fanbase";
+  owner: "official" | "group" | "fanbase" | "project" | "website";
 };
 
 export type ProfileFact = { label: string; value: string };
+
+export type FanAd = {
+  id: string;
+  location: string;
+  date: string;
+  url: string;
+  note?: string;
+};

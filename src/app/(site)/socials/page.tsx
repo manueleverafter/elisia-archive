@@ -6,10 +6,10 @@ import type { SocialLink } from "@/lib/types";
 
 export const metadata: Metadata = { title: "Socials" };
 
-const groups: { id: SocialLink["owner"]; title: string }[] = [
-  { id: "official", title: "Official" },
-  { id: "group", title: "Group" },
-  { id: "fanbase", title: "Fanbase" },
+const groups: { ids: SocialLink["owner"][]; title: string }[] = [
+  { ids: ["official"], title: "Elisia" },
+  { ids: ["group"], title: "Group" },
+  { ids: ["fanbase", "project", "website"], title: "Elysian Fortress (ELFORT)" },
 ];
 
 export default async function SocialsPage() {
@@ -20,10 +20,10 @@ export default async function SocialsPage() {
       {socials.length === 0 && <EmptyState>No links yet.</EmptyState>}
       <div className="space-y-10">
         {groups.map((g) => {
-          const links = socials.filter((s) => s.owner === g.id);
+          const links = socials.filter((s) => g.ids.includes(s.owner));
           if (!links.length) return null;
           return (
-            <section key={g.id}>
+            <section key={g.title}>
               <h2 className="mb-4 font-display text-2xl">{g.title}</h2>
               <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 {links.map((s) => (
@@ -50,7 +50,6 @@ export default async function SocialsPage() {
           );
         })}
       </div>
-      <p className="mt-10 text-sm text-muted">More of {"Elisia's"} official accounts will be added by the mods.</p>
     </Container>
   );
 }

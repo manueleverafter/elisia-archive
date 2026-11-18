@@ -34,7 +34,7 @@ export type ResourceDef = {
   defaultSort: Record<string, 1 | -1>;
 };
 
-export type ResourceKey = "media" | "polaroids" | "releases" | "posts" | "press" | "socials";
+export type ResourceKey = "media" | "polaroids" | "releases" | "posts" | "ads" | "press" | "socials";
 
 const opts = (...pairs: [string, string][]) => pairs.map(([value, label]) => ({ value, label }));
 
@@ -143,8 +143,41 @@ export const resources: Record<ResourceKey, ResourceDef> = {
           ["notice", "Notice"],
         ),
       },
+      {
+        name: "link",
+        label: "Link (optional)",
+        type: "url",
+        help: "If set, tapping the post opens this, e.g. an X post, a voting guide or a form.",
+      },
       { name: "date", label: "Date", type: "date", required: true },
-      { name: "pinned", label: "Pin to the top and the home page", type: "boolean" },
+      { name: "pinned", label: "Pin as a fan note (top of Fanbase and the home page)", type: "boolean" },
+    ],
+  },
+  ads: {
+    key: "ads",
+    label: "Fan ads",
+    singular: "ad",
+    titleField: "location",
+    dateField: "date",
+    defaultSort: { date: -1 },
+    fields: [
+      {
+        name: "location",
+        label: "Where",
+        type: "text",
+        required: true,
+        placeholder: "South Korea",
+        help: "City or country. Shown as “Aug · South Korea”.",
+      },
+      { name: "date", label: "Date", type: "date", required: true, help: "Month and year are shown." },
+      {
+        name: "url",
+        label: "Link",
+        type: "url",
+        required: true,
+        help: "The X / Instagram post showing the ad.",
+      },
+      { name: "note", label: "Note (optional)", type: "text", placeholder: "Birthday billboard, Gangnam station" },
     ],
   },
   press: {
@@ -165,7 +198,7 @@ export const resources: Record<ResourceKey, ResourceDef> = {
         label: "Coverage",
         type: "select",
         required: true,
-        options: opts(["feature", "Feature (about her)"], ["mention", "Mention"]),
+        options: opts(["feature", "Feature (about her)"], ["interview", "Interview"], ["mention", "Mention"]),
       },
     ],
   },
@@ -199,7 +232,13 @@ export const resources: Record<ResourceKey, ResourceDef> = {
         label: "Group",
         type: "select",
         required: true,
-        options: opts(["official", "Official (Elisia)"], ["group", "Group"], ["fanbase", "Fanbase"]),
+        options: opts(
+          ["official", "Official: Elisia"],
+          ["group", "Official: group"],
+          ["fanbase", "ELFORT: community account"],
+          ["project", "ELFORT: fan project"],
+          ["website", "ELFORT: website"],
+        ),
       },
       { name: "order", label: "Sort order", type: "number", help: "Lower numbers show first." },
     ],

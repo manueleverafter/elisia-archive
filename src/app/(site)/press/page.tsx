@@ -21,6 +21,7 @@ export default async function PressPage() {
         filters={[
           ...eras.map((e) => ({ id: e, label: e })),
           { id: "feature", label: "Features" },
+          { id: "interview", label: "Interviews" },
           { id: "mention", label: "Mentions" },
         ]}
         className="grid gap-4 md:grid-cols-2"

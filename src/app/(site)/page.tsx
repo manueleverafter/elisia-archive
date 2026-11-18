@@ -187,12 +187,27 @@ export default async function HomePage() {
             {pinned.length ? (
               <ul className="space-y-3">
                 {pinned.map((p) => (
-                  <li key={p.id} className="rounded-2xl bg-soft p-4">
-                    <p className="font-semibold">{p.title}</p>
-                    <p className="mt-1 text-sm text-muted">{p.body}</p>
-                    <p className="mt-2 text-xs text-muted">
-                      {p.author} · {formatDate(p.date)}
-                    </p>
+                  <li key={p.id}>
+                    {(() => {
+                      const inner = (
+                        <>
+                          <p className="font-semibold">
+                            {p.title} {p.link && <ExternalLink className="inline size-3.5" />}
+                          </p>
+                          <p className="mt-1 line-clamp-3 text-sm text-muted">{p.body}</p>
+                          <p className="mt-2 text-xs text-muted">
+                            {p.author} · {formatDate(p.date)}
+                          </p>
+                        </>
+                      );
+                      return p.link ? (
+                        <a href={p.link} target="_blank" rel="noopener noreferrer" className="block rounded-2xl bg-soft p-4 transition hover:ring-2 hover:ring-primary">
+                          {inner}
+                        </a>
+                      ) : (
+                        <div className="rounded-2xl bg-soft p-4">{inner}</div>
+                      );
+                    })()}
                   </li>
                 ))}
               </ul>

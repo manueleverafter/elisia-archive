@@ -6,7 +6,7 @@ import "server-only";
 import { cacheLife, cacheTag } from "next/cache";
 import { db } from "./server/mongo";
 import { readSettings, type ImageValue, type LinkValue } from "./server/content";
-import type { MediaItem, Polaroid, Post, PressItem, ProfileFact, Release, SocialLink } from "./types";
+import type { FanAd, MediaItem, Polaroid, Post, PressItem, ProfileFact, Release, SocialLink } from "./types";
 
 export const CONTENT_TAG = "content";
 
@@ -103,6 +103,7 @@ export async function getPosts(): Promise<Post[]> {
     date: s(d.date),
     author: s(d.author) || "mods",
     pinned: !!d.pinned,
+    link: s(d.link) || undefined,
     tag: (s(d.tag) || "announcement") as Post["tag"],
   }));
 }
@@ -119,6 +120,19 @@ export async function getPress(): Promise<PressItem[]> {
     date: s(d.date),
     era: s(d.era) || "Other",
     mention: (s(d.mention) || "mention") as PressItem["mention"],
+  }));
+}
+
+export async function getAds(): Promise<FanAd[]> {
+  "use cache";
+  cacheTag(CONTENT_TAG);
+  cacheLife("days");
+  return (await live("ads", { date: -1 })).map((d) => ({
+    id: String(d._id),
+    location: s(d.location),
+    date: s(d.date),
+    url: s(d.url),
+    note: s(d.note) || undefined,
   }));
 }
 

@@ -4,6 +4,22 @@ What changed, and why. Newest first.
 
 ---
 
+## Fanbase becomes the ELFORT hub
+
+The Fanbase page now reads like a notice board for the fandom rather than a list of posts: pinned **fan
+notes** first, then **ELFORT official pages** grouped as community accounts, fan projects and website, then
+**billboard ads around the world** grouped by year, the rest of the bulletin, and the three latest press
+headlines with a link to all of them.
+
+- **Fan ads** is a new admin section: a place, a date and the link to the post showing the ad. The page
+  shows it as "Aug · South Korea".
+- Posts can carry an optional **link**, so a note can open a voting guide or an X thread directly.
+- Socials gained **ELFORT** groups. Fanbase pages appear on both Fanbase and Socials, with Elisia's own
+  accounts listed first.
+- Press gained an **Interview** coverage type and filter.
+
+---
+
 ## Polaroids open into a viewer
 
 Tapping a print now opens it large with its caption, credit, date and size, a **source** link back to
