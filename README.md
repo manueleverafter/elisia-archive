@@ -91,6 +91,33 @@ To add a theme: add one line there, then add it to `themes` in `src/lib/themes.t
 - **Photos belong to their owners.** The code is MIT licensed; the photos, videos and articles the archive
   shows are not, and stay credited to their sources.
 
+## Hosting and costs
+
+Everything runs on free plans today. Each service does one job, and the site needs all three:
+
+| Service | Holds | Free limit | Paid step when outgrown |
+|---|---|---|---|
+| MongoDB Atlas (M0) | All text: posts, captions, links, press, fan ads, facts, mod logins, trash, activity | 512 MB (text uses well under 1%) | Atlas Flex or M10 |
+| Cloudflare R2 | Photos: web copy + HD original | 10 GB storage, no charge for views or downloads | about $0.015 per GB per month above 10 GB |
+| Vercel Hobby | The website | about 100 GB traffic per month, **non-commercial only** | Vercel Pro (about $20/month), needed if the site ever sells merch, shows ads or takes paid donations |
+
+- **Videos stay as YouTube / TikTok / X links**, not files in R2. Videos are large (10 GB holds only about
+  50–70 clips), R2 doesn't adjust quality for slow connections, and re-uploading broadcasts invites
+  takedowns. If short fan clips are ever wanted on the site, admin uploads would need to accept video first
+  (they take images only today).
+- **Atlas M0 has no automatic backups.** Run `npm run backup` now and then.
+- **Planned custom domain:** `elisia-archive.com` (unregistered when checked on 2026-11-18). Buy it at
+  Cloudflare Registrar (sold at cost, about $11–12/year, same price on renewal, free privacy protection).
+  Turn on auto-renew. Once it exists:
+  1. Add it to the Vercel project and set `BETTER_AUTH_URL` to it.
+  2. Add the new origin to the R2 bucket's CORS rules.
+  3. Serve photos from a subdomain (for example `photos.elisia-archive.com`) instead of `r2.dev`, which
+     Cloudflare rate-limits and doesn't recommend for live sites.
+  4. Optional: Cloudflare Email Routing for a free `hello@` address that forwards to Gmail.
+- **Expected yearly cost:** $0 now; about $11–12 with the domain; budget about $20–30 to cover photo
+  growth past 10 GB.
+- **Keep accounts safe:** 2FA on GitHub, Vercel, Cloudflare and Atlas.
+
 ## Roadmap
 
 1. ✅ Layout, navigation, theme system, public pages
@@ -98,7 +125,7 @@ To add a theme: add one line there, then add it to `themes` in `src/lib/themes.t
 3. ✅ Admin panel for every section, trash, activity log, photo uploads
 4. ✅ Video hero with sound / pause / restart
 5. ✅ Deployed on Vercel: every push to `main` goes live automatically
-6. ⏳ Custom domain (optional)
+6. ⏳ Custom domain `elisia-archive.com` (planned, not bought yet; see Hosting and costs)
 
 ---
 

@@ -4,6 +4,17 @@ What changed, and why. Newest first.
 
 ---
 
+## Polaroid viewer fits landscape phones
+
+On a phone held sideways the viewer had little height, but the photo kept its own height and spilled over
+the buttons below it, covering **HD download**. The photo now shrinks to the space between the title and
+the buttons, and on short screens the title and button rows are slimmer so the photo gets more room.
+
+The README also gains a **Hosting and costs** section: what each free service holds, its limits, why
+videos stay as links, and the plan for an `elisia-archive.com` domain.
+
+---
+
 ## Socials gets official link cards and a feed
 
 Socials opens with **official links**: one tinted card per platform holding Elisia's accounts. Below it
