@@ -6,8 +6,17 @@ import { db, mongoClient } from "./mongo";
 
 export const MIN_PASSWORD = 10;
 
+// The site's public address. On Vercel the production domain is provided
+// automatically, so a leftover localhost value in BETTER_AUTH_URL is ignored.
+const envUrl = process.env.BETTER_AUTH_URL;
+const vercelUrl = process.env.VERCEL_PROJECT_PRODUCTION_URL
+  ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+  : undefined;
+const baseURL = envUrl && !envUrl.includes("localhost") ? envUrl : (vercelUrl ?? envUrl);
+
 export const auth = betterAuth({
   appName: "elisia archive",
+  baseURL,
   database: mongodbAdapter(db, { client: mongoClient }),
   emailAndPassword: {
     enabled: true,
