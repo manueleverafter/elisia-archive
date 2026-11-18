@@ -126,9 +126,9 @@ export function PolaroidGallery({
               touchX.current = null;
             }}
           >
-            <header className="flex items-start gap-3 p-4">
+            <header className="flex items-start gap-3 p-4 [@media(max-height:520px)]:px-4 [@media(max-height:520px)]:py-2">
               <div className="min-w-0 flex-1">
-                <h2 className="font-display text-xl leading-tight">{photo.caption}</h2>
+                <h2 className="font-display text-xl leading-tight [@media(max-height:520px)]:text-base">{photo.caption}</h2>
                 <p className="mt-1 text-xs text-muted">
                   credit: {photo.credit} · {fmt.format(new Date(photo.date))}
                   {photo.width && photo.height ? ` · ${photo.width}×${photo.height}` : ""}
@@ -139,7 +139,7 @@ export function PolaroidGallery({
               </button>
             </header>
 
-            <div className="relative min-h-0 flex-1 bg-surface-2">
+            <div className="relative flex min-h-0 flex-1 items-center justify-center overflow-hidden bg-surface-2">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 key={photo.id}
@@ -147,7 +147,7 @@ export function PolaroidGallery({
                 alt={photo.caption}
                 width={photo.width}
                 height={photo.height}
-                className="mx-auto max-h-[70dvh] w-auto object-contain"
+                className="h-auto max-h-[min(70dvh,calc(95dvh-11rem))] w-auto max-w-full object-contain [@media(max-height:520px)]:max-h-[calc(95dvh-7.5rem)]"
               />
               {photos.length > 1 && (
                 <>
@@ -161,7 +161,7 @@ export function PolaroidGallery({
               )}
             </div>
 
-            <footer className="flex flex-wrap items-center gap-2 p-4">
+            <footer className="flex flex-wrap items-center gap-2 p-4 [@media(max-height:520px)]:py-2">
               {photo.creditUrl && (
                 <a href={photo.creditUrl} target="_blank" rel="noopener noreferrer" className={`${btn} border-border hover:bg-surface-2`}>
                   source <ExternalLink className="size-3.5" />
